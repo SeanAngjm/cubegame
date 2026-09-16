@@ -38,6 +38,8 @@ button { touch-action: manipulation; }
   top: 0;
   z-index: 20;
 }
+#topbar.hidden { display: none; }
+#gameArea.hidden { display: none; }
 
 #titleBlock { display: flex; align-items: center; gap: 8px; margin-right: auto; }
 #titleBlock h1 { font-size: 1.3rem; margin: 0; letter-spacing: 0.5px; }
@@ -71,14 +73,20 @@ button { touch-action: manipulation; }
 
 #gameArea {
   display: grid;
-  grid-template-columns: minmax(0, 2.2fr) minmax(240px, 0.75fr);
-  gap: 14px;
-  padding: 14px;
+  grid-template-columns: minmax(0, 2.2fr) minmax(220px, 0.8fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "scene xray"
+    "controls controls";
+  gap: 12px;
+  padding: 12px 14px;
   max-width: 1300px;
   margin: 0 auto;
+  height: calc(100vh - 64px);
+  min-height: 480px;
 }
 
-#sceneCol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+#sceneCol { grid-area: scene; display: flex; flex-direction: column; gap: 8px; min-width: 0; min-height: 0; }
 
 #viewBanner {
   background: linear-gradient(90deg, var(--accent-dark), var(--panel-light));
@@ -105,7 +113,8 @@ button { touch-action: manipulation; }
   background: radial-gradient(circle at 50% 30%, #232a55, #0c0e1e 75%);
   border-radius: var(--radius);
   overflow: hidden;
-  aspect-ratio: 4 / 3;
+  flex: 1 1 auto;
+  min-height: 0;
   border: 2px solid var(--panel-light);
 }
 
@@ -139,34 +148,33 @@ button { touch-action: manipulation; }
 #resultStars { font-size: 2rem; margin-bottom: 6px; }
 #resultMoves { color: var(--text-dim); margin-bottom: 18px; font-size: 0.9rem; }
 
-#sideCol { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-
 #controls {
+  grid-area: controls;
   background: var(--panel);
   border-radius: var(--radius);
-  padding: 10px 12px;
-}
-
-#controls h2 {
-  margin: 0 0 6px 0;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-dim);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
 }
 
 #xrayPanels {
+  grid-area: xray;
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  flex-wrap: wrap;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .xrayPanel {
   background: var(--panel);
   border-radius: var(--radius);
   padding: 8px 10px;
-  flex: 1 1 140px;
-  min-width: 130px;
+  width: 100%;
 }
 
 .xrayPanel h2 {
@@ -216,7 +224,7 @@ button { touch-action: manipulation; }
 .swatch.open { background: var(--warn); opacity: 0.7; }
 .swatch.block { background: var(--bad); }
 
-.rotateGrid { display: flex; flex-direction: column; gap: 6px; }
+.rotateGrid { display: flex; flex-direction: row; gap: 8px; flex-wrap: wrap; }
 .axisGroup {
   display: flex;
   align-items: center;
@@ -229,6 +237,8 @@ button { touch-action: manipulation; }
 .axis-x { color: #ff8a8a; }
 .axis-y { color: #8affa0; }
 .axis-z { color: #8ab4ff; }
+
+.controlsRight { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
 
 .rotbtn {
   background: #33396b;
@@ -249,13 +259,13 @@ button { touch-action: manipulation; }
 .rotIcon { width: 26px; height: 26px; display: block; }
 
 .movesRow {
-  margin-top: 8px;
+  margin-top: 0;
   font-size: 0.8rem;
   color: var(--text-dim);
 }
 #moveCount { color: var(--text); font-weight: 700; }
 
-.actionRow { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.actionRow { display: flex; flex-direction: row; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
 
 .bigbtn {
   border: none;
@@ -271,8 +281,9 @@ button { touch-action: manipulation; }
 .bigbtn.ghost { background: var(--panel-light); color: var(--text); }
 
 #feedbackMsg {
+  flex-basis: 100%;
   min-height: 22px;
-  margin-top: 10px;
+  margin-top: 4px;
   font-size: 0.88rem;
   font-weight: 600;
   text-align: center;
@@ -403,6 +414,182 @@ button { touch-action: manipulation; }
 .helpBody .tip { color: var(--text-dim); font-size: 0.85rem; }
 
 @media (max-width: 880px) {
-  #gameArea { grid-template-columns: 1fr; }
+  #gameArea {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas: "scene" "xray" "controls";
+    height: auto;
+    min-height: 0;
+  }
+  #canvasWrap { flex: none; aspect-ratio: 4 / 3; }
   #titleBlock h1 { font-size: 1.05rem; }
+  #controls { flex-direction: column; align-items: stretch; }
+  .rotateGrid { justify-content: center; }
+  .controlsRight { align-items: stretch; }
+  .actionRow { flex-direction: column; }
+}
+
+/* ---------------------------------------------------------------------
+   2-player competition (split-screen race) mode
+--------------------------------------------------------------------- */
+.raceModeBtn { width: 100%; margin-top: 14px; }
+
+#competitionArea.hidden { display: none; }
+
+#raceTopBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--panel);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  flex-wrap: wrap;
+}
+.raceTitle { font-size: 1.1rem; margin: 0 auto 0 0; }
+#raceDifficulty { display: flex; gap: 6px; }
+.raceDiffBtn {
+  background: var(--panel-light);
+  color: var(--text);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.raceDiffBtn:hover { background: #33396b; }
+.raceDiffBtn.current { border-color: var(--accent); color: var(--accent); }
+
+#raceGrid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  padding: 14px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: start;
+}
+#raceDivider {
+  align-self: center;
+  font-weight: 900;
+  font-size: 1.3rem;
+  color: var(--text-dim);
+}
+.racePane {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.raceName { margin: 0; text-align: center; font-size: 1rem; letter-spacing: 0.5px; }
+.raceName.p1 { color: #8ab4ff; }
+.raceName.p2 { color: #ff8a8a; }
+.raceViewBanner {
+  background: linear-gradient(90deg, var(--accent-dark), var(--panel-light));
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  text-align: center;
+}
+.raceCanvasWrap {
+  position: relative;
+  background: radial-gradient(circle at 50% 30%, #232a55, #0c0e1e 75%);
+  border-radius: 10px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border: 2px solid var(--panel-light);
+}
+.raceCanvasWrap canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+
+.raceXray { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.raceXrayPanel { background: #0a0c1c; border-radius: 8px; padding: 5px; flex: 0 0 auto; width: 74px; }
+.raceXrayGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 2px;
+  aspect-ratio: 1 / 1;
+}
+.raceXcell { border-radius: 2px; background: transparent; }
+.raceXcell.match { background: var(--good); }
+.raceXcell.open { background: var(--warn); opacity: 0.55; }
+.raceXcell.block { background: var(--bad); }
+
+.raceControls { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.raceAxisGroup { display: flex; align-items: center; gap: 3px; background: var(--panel-light); padding: 4px 6px; border-radius: 8px; }
+.raceRotBtn {
+  background: #33396b;
+  border: none;
+  color: var(--text);
+  width: 34px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.raceRotBtn:hover { background: var(--accent-dark); }
+.raceRotBtn .rotIcon { width: 20px; height: 20px; display: block; }
+
+.raceTestBtn {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  background: var(--accent);
+  color: #062a27;
+  cursor: pointer;
+}
+.raceTestBtn:hover { filter: brightness(1.1); }
+.raceTestBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.raceFeedback { min-height: 18px; text-align: center; font-size: 0.78rem; font-weight: 600; }
+.raceFeedback.bad { color: var(--bad); }
+.raceFeedback.good { color: var(--good); }
+
+#raceCountdown {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6rem;
+  font-weight: 900;
+  color: var(--accent);
+  background: rgba(5,6,16,0.55);
+  z-index: 45;
+  pointer-events: none;
+}
+#raceCountdown.hidden { display: none; }
+
+#raceWinnerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,6,16,0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 46;
+}
+#raceWinnerOverlay.hidden { display: none; }
+#raceWinnerCard {
+  background: var(--panel);
+  padding: 32px 36px;
+  border-radius: var(--radius);
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+#raceWinnerTitle { font-size: 1.8rem; font-weight: 900; margin-bottom: 18px; }
+#raceWinnerCard .bigbtn { display: block; width: 240px; margin: 8px auto 0; }
+
+@media (max-width: 900px) {
+  #raceGrid { grid-template-columns: 1fr; }
 }

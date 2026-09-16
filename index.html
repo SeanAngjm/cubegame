@@ -23,6 +23,7 @@
     <span class="cube-icon">🧊</span>
     <h1>Cube Fit</h1>
   </div>
+  <button id="menuBtn" class="topbtn iconbtn" title="Choose difficulty / 2-player race">🏠</button>
   <button id="modeBadgeBtn" class="topbtn modebtn">
     <span id="modeBadgeLabel">Easy</span> · Level <span id="levelNum">1</span>/<span id="levelTotal">18</span>
   </button>
@@ -53,41 +54,83 @@
     <div id="dragHint">🖱️ Drag with 1 finger to spin the block · 2 fingers to look around</div>
   </section>
 
-  <section id="sideCol">
+  <div id="xrayPanels"><!-- populated per-level with 1-3 panels --></div>
 
-    <div id="xrayPanels"><!-- populated per-level with 1-3 panels --></div>
-
-    <div id="controls">
-      <h2>Rotate the Block</h2>
-      <div class="rotateGrid">
-        <div class="axisGroup">
-          <span class="axisLabel axis-x">Tip</span>
-          <button class="rotbtn" data-axis="x" data-dir="-1"></button>
-          <button class="rotbtn" data-axis="x" data-dir="1"></button>
-        </div>
-        <div class="axisGroup">
-          <span class="axisLabel axis-y">Spin</span>
-          <button class="rotbtn" data-axis="y" data-dir="-1"></button>
-          <button class="rotbtn" data-axis="y" data-dir="1"></button>
-        </div>
-        <div class="axisGroup">
-          <span class="axisLabel axis-z">Roll</span>
-          <button class="rotbtn" data-axis="z" data-dir="-1"></button>
-          <button class="rotbtn" data-axis="z" data-dir="1"></button>
-        </div>
+  <div id="controls">
+    <div class="rotateGrid">
+      <div class="axisGroup">
+        <span class="axisLabel axis-x">Tip</span>
+        <button class="rotbtn" data-axis="x" data-dir="-1"></button>
+        <button class="rotbtn" data-axis="x" data-dir="1"></button>
       </div>
+      <div class="axisGroup">
+        <span class="axisLabel axis-y">Spin</span>
+        <button class="rotbtn" data-axis="y" data-dir="-1"></button>
+        <button class="rotbtn" data-axis="y" data-dir="1"></button>
+      </div>
+      <div class="axisGroup">
+        <span class="axisLabel axis-z">Roll</span>
+        <button class="rotbtn" data-axis="z" data-dir="-1"></button>
+        <button class="rotbtn" data-axis="z" data-dir="1"></button>
+      </div>
+    </div>
 
+    <div class="controlsRight">
       <div class="movesRow">Rotations used: <span id="moveCount">0</span></div>
-
       <div class="actionRow">
         <button id="pushBtn" class="bigbtn primary">Test Fit ➜</button>
         <button id="resetBtn" class="bigbtn ghost">Reset Block</button>
         <button id="hintBtn" class="bigbtn ghost">Hint 💡</button>
       </div>
-      <div id="feedbackMsg"></div>
     </div>
+    <div id="feedbackMsg"></div>
+  </div>
+</main>
 
-  </section>
+<!-- 2-player competition (split-screen race) -->
+<main id="competitionArea" class="hidden">
+  <div id="raceTopBar">
+    <button id="raceMenuBtn" class="topbtn iconbtn" title="Back to menu">🏠</button>
+    <h1 class="raceTitle">🏆 2-Player Race</h1>
+    <div id="raceDifficulty">
+      <button class="raceDiffBtn current" data-mode="easy">Easy</button>
+      <button class="raceDiffBtn" data-mode="medium">Medium</button>
+      <button class="raceDiffBtn" data-mode="hard">Hard</button>
+    </div>
+    <button id="raceStartBtn" class="topbtn">New Race 🔄</button>
+  </div>
+
+  <div id="raceGrid">
+    <section class="racePane" id="racePane1">
+      <h3 class="raceName p1">Player 1</h3>
+      <div class="raceViewBanner" id="raceView1"></div>
+      <div class="raceCanvasWrap"><canvas id="raceCanvas1"></canvas></div>
+      <div class="raceXray" id="raceXray1"></div>
+      <div class="raceControls" id="raceControls1"></div>
+      <div class="raceFeedback" id="raceFeedback1"></div>
+    </section>
+
+    <div id="raceDivider">VS</div>
+
+    <section class="racePane" id="racePane2">
+      <h3 class="raceName p2">Player 2</h3>
+      <div class="raceViewBanner" id="raceView2"></div>
+      <div class="raceCanvasWrap"><canvas id="raceCanvas2"></canvas></div>
+      <div class="raceXray" id="raceXray2"></div>
+      <div class="raceControls" id="raceControls2"></div>
+      <div class="raceFeedback" id="raceFeedback2"></div>
+    </section>
+  </div>
+
+  <div id="raceCountdown" class="hidden"></div>
+
+  <div id="raceWinnerOverlay" class="hidden">
+    <div id="raceWinnerCard">
+      <div id="raceWinnerTitle">Player 1 Wins! 🎉</div>
+      <button id="raceAgainBtn" class="bigbtn primary">Race Again 🔄</button>
+      <button id="raceBackBtn" class="bigbtn ghost">Back to Menu</button>
+    </div>
+  </div>
 </main>
 
 <div id="introToast" class="hidden"></div>
@@ -100,6 +143,7 @@
       <button class="closeX" data-close="modeModal">✕</button>
     </div>
     <div id="modeGrid"></div>
+    <button id="raceModeBtn" class="bigbtn primary raceModeBtn">🏆 2-Player Race Mode</button>
   </div>
 </div>
 
@@ -143,5 +187,6 @@
 </div>
 
 <script type="module" src="js/main.js"></script>
+<script type="module" src="js/competition.js"></script>
 </body>
 </html>

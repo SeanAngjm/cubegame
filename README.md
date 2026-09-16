@@ -55,12 +55,34 @@ fully 3D pieces where all three views are distinct.
 ### Flow & progress
 
 The game always opens on the **difficulty picker** first, showcasing all
-three modes before dropping the student into a puzzle. Every level in
-every mode is playable from the start — nothing is locked — so a
-student (or teacher demoing the game) can jump straight to any level via
-the **Levels** button. Star ratings and best-move counts are still saved
-per difficulty via `localStorage`, purely as a record of best attempts,
-not as a gate.
+three modes before dropping the student into a puzzle. A **🏠 button** in
+the top bar reopens that picker at any time (so does the mode badge next
+to it) — handy for a teacher switching difficulty mid-class or jumping
+into the race mode below. Every level in every mode is playable from the
+start — nothing is locked — so a student (or teacher demoing the game)
+can jump straight to any level via the **Levels** button. Star ratings
+and best-move counts are still saved per difficulty via `localStorage`,
+purely as a record of best attempts, not as a gate.
+
+The rotate buttons and action buttons (Test Fit / Reset / Hint) sit in a
+single bar **below the 3D play area**, not off to the side — on a large
+classroom touchscreen that keeps them within easy reach of a shorter
+student, and the whole layout is sized to fit one screen without
+scrolling.
+
+### 2-Player Race mode
+
+From the difficulty picker, **🏆 2-Player Race Mode** switches to a
+split-screen view: two independent play areas side by side, each with
+its own 3D scene, x-ray panel(s), rotate buttons and Test Fit button.
+Both players get the *same* randomly-picked level (choose Easy/Medium/
+Hard from the race screen's own toolbar) after a 3-2-1-GO countdown —
+whoever lines theirs up and hits Test Fit successfully first wins. Since
+each player has their own `<canvas>` element, the browser keeps their
+touches separate automatically, so two students can rotate their own
+block at the same time on one shared touchscreen with no extra work.
+"Race Again" starts a fresh level at the same difficulty; the 🏠 button
+returns to the single-player menu.
 
 ## Project structure
 
@@ -86,6 +108,11 @@ js/icons.js                  Generates the curved-arrow SVG icons used on
                             the rotate buttons (see "Controls" above),
                             so direction is shown visually instead of via
                             axis labels.
+js/competition.js            Self-contained 2-player split-screen race
+                            mode. Reuses geometry.js/levels.js/icons.js
+                            but drives its own pair of Three.js scenes
+                            (one per player canvas) so it can't regress
+                            the single-player game in main.js.
 js/verify-levels.mjs        A standalone Node script (no browser needed)
                             that brute-forces every level's 24 possible
                             orientations, in all three modes, and
@@ -162,10 +189,9 @@ Requested and planned, but not in this pass:
 
 - **Build-your-own-block mode**: a voxel-style tray where students
   combine several smaller pieces into one custom shape before rotating
-  it to fit — as a second mode alongside "rotate a preset block".
-- **Two-player split-screen competition mode**: the touchscreen splits
-  into two independent halves, each with its own puzzle and touch
-  controls, racing to fit first.
+  it to fit — as a second mode alongside "rotate a preset block". This
+  is the one remaining feature from the original request list that
+  hasn't been built yet.
 
-Both are meaningful features in their own right and are intentionally
-left for a follow-up pass rather than bolted on quickly here.
+(The two-player split-screen race mode that used to be listed here has
+since been built — see "2-Player Race mode" above.)

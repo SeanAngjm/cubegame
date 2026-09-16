@@ -681,6 +681,7 @@ el('hintBtn').addEventListener('click', giveHint);
 el('nextLevelBtn').addEventListener('click', () => loadLevel(Math.min(levelIndex + 1, LEVELS.length - 1)));
 el('retryBtn').addEventListener('click', () => loadLevel(levelIndex));
 
+el('menuBtn').addEventListener('click', () => openModal('modeModal'));
 el('modeBadgeBtn').addEventListener('click', () => openModal('modeModal'));
 el('levelSelectBtn').addEventListener('click', () => openModal('levelModal'));
 el('helpBtn').addEventListener('click', () => openModal('helpModal'));
