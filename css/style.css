@@ -25,6 +25,8 @@ html, body {
   overflow-x: hidden;
 }
 
+button { touch-action: manipulation; }
+
 #topbar {
   display: flex;
   align-items: center;
@@ -62,7 +64,10 @@ html, body {
   transition: transform 0.1s ease, background 0.15s ease;
 }
 .topbtn:hover { background: var(--accent-dark); transform: translateY(-1px); }
-#helpBtn { width: 38px; padding: 8px 0; }
+.iconbtn { width: 42px; padding: 8px 0; font-size: 1.05rem; }
+.modebtn { background: var(--panel-light); color: var(--text); font-weight: 700; }
+.modebtn:hover { background: #33396b; }
+#modeBadgeLabel { color: var(--accent); }
 
 #gameArea {
   display: grid;
@@ -80,12 +85,20 @@ html, body {
   border-radius: var(--radius);
   padding: 10px 16px;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   flex-wrap: wrap;
 }
-#viewLabel { font-size: 1.15rem; font-weight: 800; letter-spacing: 1px; }
-#viewExplain { color: var(--text-dim); font-size: 0.9rem; }
+#viewChips { display: flex; gap: 6px; flex-wrap: wrap; }
+.viewChip {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: rgba(0,0,0,0.18);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+#viewExplain { color: var(--text-dim); font-size: 0.85rem; }
 
 #canvasWrap {
   position: relative;
@@ -128,22 +141,51 @@ html, body {
 
 #sideCol { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 
-#xrayPanel, #controls {
+#controls {
   background: var(--panel);
   border-radius: var(--radius);
   padding: 16px;
 }
 
-#xrayPanel h2, #controls h2 {
+#controls h2 {
   margin: 0 0 10px 0;
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-dim);
 }
-#xrayPanel h2 .sub { text-transform: none; font-weight: 400; letter-spacing: 0; }
 
-#xrayGrid {
+#xrayPanels {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.xrayPanel {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 14px;
+  flex: 1 1 200px;
+  min-width: 170px;
+}
+
+.xrayPanel h2 {
+  margin: 0 0 8px 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.xrayPanel h2 .sub { text-transform: none; font-weight: 400; letter-spacing: 0; }
+.xrayPanel h2 .axisDot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.axisDot.axis-front { background: #8ab4ff; }
+.axisDot.axis-top { background: #8affa0; }
+.axisDot.axis-side { background: #ff8a8a; }
+
+.xrayGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
@@ -192,9 +234,9 @@ html, body {
   background: #33396b;
   border: none;
   color: var(--text);
-  font-size: 1.2rem;
-  width: 44px;
-  height: 40px;
+  font-size: 1.35rem;
+  width: 54px;
+  height: 48px;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
@@ -291,6 +333,41 @@ html, body {
   cursor: pointer;
   font-size: 1rem;
 }
+
+.modeTag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--accent-dark);
+  color: #062a27;
+  border-radius: 999px;
+  padding: 3px 10px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+#modeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.modeCard {
+  background: var(--panel-light);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.modeCard:hover { background: #33396b; transform: translateY(-2px); }
+.modeCard.current { border-color: var(--accent); }
+.modeCard .modeIcon { font-size: 1.6rem; }
+.modeCard .modeName { font-size: 1.15rem; font-weight: 800; margin: 6px 0 2px; }
+.modeCard .modeSubtitle { font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+.modeCard .modeDesc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.4; }
+.modeCard .modeProgress { margin-top: 10px; font-size: 0.78rem; color: var(--text-dim); }
 
 #levelGrid {
   display: grid;

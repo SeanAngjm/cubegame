@@ -1,9 +1,8 @@
 # Cube Fit 🧊
 
 A hands-on browser game for teaching **orthographic views** (front view,
-top view, side view) — built for primary-school maths/geometry practice.
-
-**[Play it live](#) once GitHub Pages is enabled — see below.**
+top view, side view) — built for primary-school maths/geometry practice,
+and designed to run well on a touchscreen classroom display.
 
 ## The idea
 
@@ -11,43 +10,76 @@ Most lessons on this topic work one way: show a 3D shape, ask the student
 to identify its front/top/side view from a picture. Cube Fit flips it
 around — **the student builds the view themselves.**
 
-A block made of unit cubes floats in front of a wall. The wall has a hole
-cut in the exact shape of one of that block's views (front, top, or
-side). The student rotates the block 90° at a time and watches a live
-"X-Ray" panel that shows, cell by cell, which parts line up with the hole
-(green), which parts of the hole are still open (amber), and which parts
-would smash into the solid wall (red). When every cell is green, they
-push the block through.
+A block made of unit cubes floats in the middle of the scene. One or more
+walls, each with a hole cut in the exact shape of one of that block's
+views, slide through the block in turn. The student rotates the block
+until every active wall's hole lines up, then hits **Test Fit**. A live
+"X-Ray" panel per wall shows, cell by cell, which parts line up (green),
+which parts of the hole are still open (amber), and which parts would hit
+the solid wall (red).
+
+### Three difficulty modes
+
+| Mode | Walls | What it asks |
+|---|---|---|
+| **Easy** | 1 | Match one view — front, top, or side. |
+| **Medium** | 2 | Find one rotation that satisfies two views at once (e.g. front AND top). |
+| **Hard** | 3 | Find the one orientation (or symmetric equivalent) that satisfies all three views simultaneously. |
 
 To make the puzzle non-trivial, most levels use **polycube shapes**
 (blocky, multi-cube pieces) rather than a plain cube — a plain cube looks
-identical from every 90°-aligned angle, so there'd be nothing to figure
-out. Early levels use flat, one-cube-thick pieces (so two of the three
-views are simple rectangles and only one view is "interesting" — the
-classic paper-and-pencil orthographic exercise). Later levels use fully
-3D pieces where all three views are distinct and the puzzle gets genuinely
-tricky.
+identical from every 90°-aligned angle. Early Easy levels use flat,
+one-cube-thick pieces (so two of the three views are simple rectangles
+and only one view is "interesting" — the classic paper-and-pencil
+orthographic exercise). Later levels, and Medium/Hard throughout, use
+fully 3D pieces where all three views are distinct.
+
+### Controls
+
+- **Buttons**: six rotate buttons (±90° around X/Y/Z), always available.
+- **Touch**: swipe with **one finger** anywhere on the 3D scene to spin
+  the block (left/right = Y axis, up/down = X axis); drag with **two
+  fingers** to orbit/zoom the camera instead — the two never conflict,
+  which matters on a shared touchscreen. Z-axis rotation is button-only
+  for now (a two-finger twist gesture would be a natural follow-up).
+- **Keyboard**: `Q`/`W` (X axis), `A`/`S` (Y axis), `Z`/`X` (Z axis),
+  `Space` = Test Fit, `R` = reset.
+- **Fullscreen button** (top bar) — handy for a classroom display/kiosk
+  setup so the browser chrome doesn't eat screen space.
+
+Progress (stars + unlocked levels) is saved separately per difficulty via
+`localStorage`.
 
 ## Project structure
 
 ```
-index.html              Page shell + UI
-css/style.css            All styling
-js/geometry.js           Pure grid math: 90° rotations, projections,
-                          silhouette comparison. No Three.js/DOM - easy
-                          to unit test on its own.
-js/levels.js              The shape library + the 18-level campaign.
-                          Each level's hole is derived directly from the
-                          shape via geometry.js, so a hole can never be
-                          impossible.
-js/main.js                Three.js scene, UI wiring, scoring, save data.
-js/verify-levels.mjs      A standalone Node script (no browser needed)
-                          that brute-forces every level's 24 possible
-                          orientations and confirms a solution exists.
-js/vendor/three/          Three.js, vendored locally so the game has zero
-                          external dependencies at runtime (works offline,
-                          and isn't affected by school network filters
-                          that block CDNs).
+index.html                Page shell + UI (mode/level/help modals, x-ray
+                            panel container, rotate controls)
+css/style.css              All styling
+js/geometry.js             Pure grid math: 90° rotations, projections to
+                            2D silhouettes, silhouette comparison. No
+                            Three.js/DOM - easy to unit test on its own.
+js/levels.js                The shape library + Easy/Medium/Hard level
+                            campaigns. Each level's hole(s) are derived
+                            directly from the shape via geometry.js, so a
+                            level can never be impossible - even Hard
+                            mode (all 3 views at once) is always solvable
+                            because a shape's own identity orientation
+                            trivially satisfies all three simultaneously.
+js/main.js                  Three.js scene, multi-wall build/slide
+                            animation, per-view x-ray panels, touch/mouse
+                            input, mode & level select UI, scoring, save
+                            data.
+js/verify-levels.mjs        A standalone Node script (no browser needed)
+                            that brute-forces every level's 24 possible
+                            orientations, in all three modes, and
+                            confirms a solution exists.
+js/vendor/three/            Three.js, vendored locally so the game has no
+                            external runtime dependency (works offline,
+                            and isn't affected by school network filters
+                            that block CDNs). OrbitControls has one small
+                            local patch - see "Vendored library patch"
+                            below.
 ```
 
 ## Running it locally
@@ -67,19 +99,37 @@ It's plain HTML/CSS/JS — no build step.
 node js/verify-levels.mjs
 ```
 
-This re-derives every level's hole from its shape and brute-force
-searches all 24 possible cube orientations to confirm at least one of
-them solves it. Run this after adding or editing a shape in `levels.js`.
+This re-derives every level's hole(s) from its shape, in all three
+difficulty modes, and brute-force searches all 24 possible cube
+orientations to confirm at least one of them satisfies every active view
+simultaneously. It also prints the worst-case number of quarter-turns
+needed from any scrambled starting orientation, which is what the `par`
+values (used for star ratings) should be based on. Run this after adding
+or editing a shape or level.
 
 ## Adding a new shape / level
 
 1. Add a list of unit-cube coordinates to the shape library in
-   `js/levels.js`, e.g. `const MY_SHAPE = [[0,0,0],[1,0,0],[1,1,0]];`
-2. Add an entry to `RAW_LEVELS` referencing it with a `view` of
-   `'front'`, `'top'`, or `'side'`.
-3. Run `node js/verify-levels.mjs` — it will tell you immediately if the
-   level is solvable (it always will be, since the hole is generated
-   from the shape, but it's a good habit before shipping a change).
+   `js/levels.js`, e.g. `const MY_SHAPE = [[0,0,0],[1,0,0],[1,1,0]];` and
+   register it in `SHAPE_LIB`.
+2. Add an entry to `EASY_RAW` / `MEDIUM_RAW` / `HARD_RAW` referencing it
+   with a `views` array (one entry for Easy, two for Medium, three for
+   Hard) and a `par`.
+3. Run `node js/verify-levels.mjs` to confirm it's solvable and see a
+   sensible `par` (it always will be solvable, since holes are generated
+   from the shape itself, but the worst-case number is a good habit to
+   check before shipping).
+
+## Vendored library patch
+
+`js/vendor/three/controls/OrbitControls.js` has one small local patch:
+its two `setPointerCapture`/`releasePointerCapture` calls are wrapped in
+try/catch. Without it, a pointer that's released faster than the browser
+can process it (a very quick tap, or certain automated test harnesses)
+throws an uncaught `DOMException` from inside OrbitControls' own event
+handler. The patch is marked with `[cube-fit patch]` comments in that
+file — if you ever update Three.js, re-apply it (or check whether
+upstream has fixed this itself).
 
 ## Publishing on GitHub Pages
 
@@ -87,14 +137,19 @@ them solves it. Run this after adding or editing a shape in `levels.js`.
 2. In the repo, go to **Settings → Pages**.
 3. Under **Build and deployment**, set **Source** to **Deploy from a
    branch**, branch `main`, folder `/ (root)`.
-3. Save — GitHub will give you a `https://<username>.github.io/<repo>/`
+4. Save — GitHub will give you a `https://<username>.github.io/<repo>/`
    link within a minute or two.
 
-## Controls
+## Roadmap / not built yet
 
-- Click the rotate arrows, or use the keyboard: `Q`/`W` (X axis),
-  `A`/`S` (Y axis), `Z`/`X` (Z axis), `Space` to push, `R` to reset.
-- Drag anywhere in the 3D scene to look around — that's just the camera
-  and never counts as a move.
-- Progress (stars + unlocked levels) is saved in the browser via
-  `localStorage`, per device/browser.
+Requested and planned, but not in this pass:
+
+- **Build-your-own-block mode**: a voxel-style tray where students
+  combine several smaller pieces into one custom shape before rotating
+  it to fit — as a second mode alongside "rotate a preset block".
+- **Two-player split-screen competition mode**: the touchscreen splits
+  into two independent halves, each with its own puzzle and touch
+  controls, racing to fit first.
+
+Both are meaningful features in their own right and are intentionally
+left for a follow-up pass rather than bolted on quickly here.

@@ -23,17 +23,20 @@
     <span class="cube-icon">🧊</span>
     <h1>Cube Fit</h1>
   </div>
-  <div id="levelBadge">Level <span id="levelNum">1</span> / <span id="levelTotal">18</span></div>
+  <button id="modeBadgeBtn" class="topbtn modebtn">
+    <span id="modeBadgeLabel">Easy</span> · Level <span id="levelNum">1</span>/<span id="levelTotal">18</span>
+  </button>
   <button id="levelSelectBtn" class="topbtn">Levels</button>
-  <button id="helpBtn" class="topbtn" title="How to play">?</button>
+  <button id="fullscreenBtn" class="topbtn iconbtn" title="Fullscreen">⛶</button>
+  <button id="helpBtn" class="topbtn iconbtn" title="How to play">?</button>
 </header>
 
 <main id="gameArea">
 
   <section id="sceneCol">
     <div id="viewBanner">
-      <span id="viewLabel">FRONT VIEW</span>
-      <span id="viewExplain">Looking straight at the block, face-on.</span>
+      <div id="viewChips"></div>
+      <span id="viewExplain"></span>
     </div>
     <div id="canvasWrap">
       <canvas id="three-canvas"></canvas>
@@ -47,20 +50,12 @@
         </div>
       </div>
     </div>
-    <div id="dragHint">🖱️ Drag to look around the scene</div>
+    <div id="dragHint">🖱️ Drag with 1 finger to spin the block · 2 fingers to look around</div>
   </section>
 
   <section id="sideCol">
 
-    <div id="xrayPanel">
-      <h2>X-Ray View <span class="sub">(what the wall sees)</span></h2>
-      <div id="xrayGrid"></div>
-      <div class="legend">
-        <span><i class="swatch match"></i> lines up</span>
-        <span><i class="swatch open"></i> still open</span>
-        <span><i class="swatch block"></i> hits wall</span>
-      </div>
-    </div>
+    <div id="xrayPanels"><!-- populated per-level with 1-3 panels --></div>
 
     <div id="controls">
       <h2>Rotate the Block</h2>
@@ -85,7 +80,7 @@
       <div class="movesRow">Rotations used: <span id="moveCount">0</span></div>
 
       <div class="actionRow">
-        <button id="pushBtn" class="bigbtn primary">Push Through ➜</button>
+        <button id="pushBtn" class="bigbtn primary">Test Fit ➜</button>
         <button id="resetBtn" class="bigbtn ghost">Reset Block</button>
         <button id="hintBtn" class="bigbtn ghost">Hint 💡</button>
       </div>
@@ -97,11 +92,22 @@
 
 <div id="introToast" class="hidden"></div>
 
+<!-- Mode select modal -->
+<div id="modeModal" class="modal hidden">
+  <div class="modalCard">
+    <div class="modalHead">
+      <h2>Choose a Difficulty</h2>
+      <button class="closeX" data-close="modeModal">✕</button>
+    </div>
+    <div id="modeGrid"></div>
+  </div>
+</div>
+
 <!-- Level select modal -->
 <div id="levelModal" class="modal hidden">
   <div class="modalCard">
     <div class="modalHead">
-      <h2>Choose a Level</h2>
+      <h2>Choose a Level <span id="levelModalMode" class="modeTag"></span></h2>
       <button class="closeX" data-close="levelModal">✕</button>
     </div>
     <div id="levelGrid"></div>
@@ -117,18 +123,21 @@
     </div>
     <div class="helpBody">
       <p><strong>The wall has a hole cut in the shape of one view of the block</strong> — its
-      <strong>front view</strong>, <strong>top view</strong>, or <strong>side view</strong>.</p>
+      <strong>front view</strong>, <strong>top view</strong>, or <strong>side view</strong>.
+      On Medium and Hard, two or three walls test different views AT THE SAME TIME, so
+      your rotation has to satisfy all of them at once.</p>
       <ul>
         <li><strong>Front view</strong> — looking straight at the block.</li>
         <li><strong>Top view</strong> — looking straight down from above.</li>
         <li><strong>Side view</strong> — looking at it from the left or right.</li>
       </ul>
-      <p>Use the <strong>rotate buttons</strong> to turn the block 90° at a time. Watch the
-      <strong>X-Ray panel</strong> — it shows you exactly which parts line up (green), which parts
-      are still missing (amber), and which parts would smash into the wall (red).</p>
-      <p>When every square is green, hit <strong>Push Through</strong>!</p>
-      <p class="tip">Tip: drag anywhere in the 3D scene to look at the block from a different
-      angle — it doesn't count as a move.</p>
+      <p>Use the <strong>rotate buttons</strong> — or on a touchscreen, <strong>swipe with one
+      finger</strong> right on the block (swipe left/right spins it one way, up/down spins it
+      the other way). Watch the <strong>X-Ray panel(s)</strong> — green means that part lines up,
+      amber means it's still open, red means it would smash into the wall.</p>
+      <p>When every panel is all green, hit <strong>Test Fit</strong>!</p>
+      <p class="tip">Tip: drag with <strong>two fingers</strong> (or the mouse) to look around the
+      scene from a different angle — that never counts as a move.</p>
     </div>
   </div>
 </div>

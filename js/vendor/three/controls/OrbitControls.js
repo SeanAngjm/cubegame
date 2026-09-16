@@ -999,7 +999,16 @@ class OrbitControls extends EventDispatcher {
 
 			if ( pointers.length === 0 ) {
 
-				scope.domElement.setPointerCapture( event.pointerId );
+				// [cube-fit patch] setPointerCapture can throw ("No active
+				// pointer with the given id") if the pointer was already
+				// released by the time this runs - a real (if rare) race on
+				// fast taps, and also how headless test harnesses dispatch
+				// synthetic pointer events. Never let that crash the app.
+				try {
+
+					scope.domElement.setPointerCapture( event.pointerId );
+
+				} catch ( err ) { /* ignore - see comment above */ }
 
 				scope.domElement.addEventListener( 'pointermove', onPointerMove );
 				scope.domElement.addEventListener( 'pointerup', onPointerUp );
@@ -1044,7 +1053,12 @@ class OrbitControls extends EventDispatcher {
 
 			if ( pointers.length === 0 ) {
 
-				scope.domElement.releasePointerCapture( event.pointerId );
+				// [cube-fit patch] see the matching try/catch in onPointerDown.
+				try {
+
+					scope.domElement.releasePointerCapture( event.pointerId );
+
+				} catch ( err ) { /* ignore - see comment above */ }
 
 				scope.domElement.removeEventListener( 'pointermove', onPointerMove );
 				scope.domElement.removeEventListener( 'pointerup', onPointerUp );
