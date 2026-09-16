@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Cube Fit — See Every Side!</title>
+<meta name="description" content="Rotate the 3D block and find the front, top, and side view that lets it fit through the hole in the wall. A hands-on game for learning orthographic views." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%8A%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="css/style.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "./js/vendor/three/three.module.js",
+    "three/addons/": "./js/vendor/three/"
+  }
+}
+</script>
+</head>
+<body>
+
+<header id="topbar">
+  <div id="titleBlock">
+    <span class="cube-icon">🧊</span>
+    <h1>Cube Fit</h1>
+  </div>
+  <div id="levelBadge">Level <span id="levelNum">1</span> / <span id="levelTotal">18</span></div>
+  <button id="levelSelectBtn" class="topbtn">Levels</button>
+  <button id="helpBtn" class="topbtn" title="How to play">?</button>
+</header>
+
+<main id="gameArea">
+
+  <section id="sceneCol">
+    <div id="viewBanner">
+      <span id="viewLabel">FRONT VIEW</span>
+      <span id="viewExplain">Looking straight at the block, face-on.</span>
+    </div>
+    <div id="canvasWrap">
+      <canvas id="three-canvas"></canvas>
+      <div id="resultOverlay" class="hidden">
+        <div id="resultCard">
+          <div id="resultTitle">Great Fit!</div>
+          <div id="resultStars">⭐⭐⭐</div>
+          <div id="resultMoves"></div>
+          <button id="nextLevelBtn" class="bigbtn">Next Level →</button>
+          <button id="retryBtn" class="bigbtn ghost">Play Again</button>
+        </div>
+      </div>
+    </div>
+    <div id="dragHint">🖱️ Drag to look around the scene</div>
+  </section>
+
+  <section id="sideCol">
+
+    <div id="xrayPanel">
+      <h2>X-Ray View <span class="sub">(what the wall sees)</span></h2>
+      <div id="xrayGrid"></div>
+      <div class="legend">
+        <span><i class="swatch match"></i> lines up</span>
+        <span><i class="swatch open"></i> still open</span>
+        <span><i class="swatch block"></i> hits wall</span>
+      </div>
+    </div>
+
+    <div id="controls">
+      <h2>Rotate the Block</h2>
+      <div class="rotateGrid">
+        <div class="axisGroup">
+          <span class="axisLabel axis-x">X axis</span>
+          <button class="rotbtn" data-axis="x" data-dir="-1">⟲</button>
+          <button class="rotbtn" data-axis="x" data-dir="1">⟳</button>
+        </div>
+        <div class="axisGroup">
+          <span class="axisLabel axis-y">Y axis</span>
+          <button class="rotbtn" data-axis="y" data-dir="-1">⟲</button>
+          <button class="rotbtn" data-axis="y" data-dir="1">⟳</button>
+        </div>
+        <div class="axisGroup">
+          <span class="axisLabel axis-z">Z axis</span>
+          <button class="rotbtn" data-axis="z" data-dir="-1">⟲</button>
+          <button class="rotbtn" data-axis="z" data-dir="1">⟳</button>
+        </div>
+      </div>
+
+      <div class="movesRow">Rotations used: <span id="moveCount">0</span></div>
+
+      <div class="actionRow">
+        <button id="pushBtn" class="bigbtn primary">Push Through ➜</button>
+        <button id="resetBtn" class="bigbtn ghost">Reset Block</button>
+        <button id="hintBtn" class="bigbtn ghost">Hint 💡</button>
+      </div>
+      <div id="feedbackMsg"></div>
+    </div>
+
+  </section>
+</main>
+
+<div id="introToast" class="hidden"></div>
+
+<!-- Level select modal -->
+<div id="levelModal" class="modal hidden">
+  <div class="modalCard">
+    <div class="modalHead">
+      <h2>Choose a Level</h2>
+      <button class="closeX" data-close="levelModal">✕</button>
+    </div>
+    <div id="levelGrid"></div>
+  </div>
+</div>
+
+<!-- Help modal -->
+<div id="helpModal" class="modal hidden">
+  <div class="modalCard">
+    <div class="modalHead">
+      <h2>How to Play</h2>
+      <button class="closeX" data-close="helpModal">✕</button>
+    </div>
+    <div class="helpBody">
+      <p><strong>The wall has a hole cut in the shape of one view of the block</strong> — its
+      <strong>front view</strong>, <strong>top view</strong>, or <strong>side view</strong>.</p>
+      <ul>
+        <li><strong>Front view</strong> — looking straight at the block.</li>
+        <li><strong>Top view</strong> — looking straight down from above.</li>
+        <li><strong>Side view</strong> — looking at it from the left or right.</li>
+      </ul>
+      <p>Use the <strong>rotate buttons</strong> to turn the block 90° at a time. Watch the
+      <strong>X-Ray panel</strong> — it shows you exactly which parts line up (green), which parts
+      are still missing (amber), and which parts would smash into the wall (red).</p>
+      <p>When every square is green, hit <strong>Push Through</strong>!</p>
+      <p class="tip">Tip: drag anywhere in the 3D scene to look at the block from a different
+      angle — it doesn't count as a move.</p>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
