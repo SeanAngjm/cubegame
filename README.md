@@ -36,19 +36,31 @@ fully 3D pieces where all three views are distinct.
 
 ### Controls
 
-- **Buttons**: six rotate buttons (±90° around X/Y/Z), always available.
+- **Buttons**: six rotate buttons, always available. Instead of "X/Y/Z
+  axis" labels (which primary students haven't learned yet), each button
+  shows a curved arrow icon indicating which way it spins the block, and
+  the three pairs are named in plain language — **Tip** (tips it
+  forward/back), **Spin** (spins it left/right), **Roll** (rolls it like
+  a wheel) — each color-coded to match its x-ray panel dots.
 - **Touch**: swipe with **one finger** anywhere on the 3D scene to spin
-  the block (left/right = Y axis, up/down = X axis); drag with **two
+  the block (left/right = Spin, up/down = Tip); drag with **two
   fingers** to orbit/zoom the camera instead — the two never conflict,
-  which matters on a shared touchscreen. Z-axis rotation is button-only
-  for now (a two-finger twist gesture would be a natural follow-up).
-- **Keyboard**: `Q`/`W` (X axis), `A`/`S` (Y axis), `Z`/`X` (Z axis),
+  which matters on a shared touchscreen. Roll is button-only for now (a
+  two-finger twist gesture would be a natural follow-up).
+- **Keyboard**: `Q`/`W` (Tip), `A`/`S` (Spin), `Z`/`X` (Roll),
   `Space` = Test Fit, `R` = reset.
 - **Fullscreen button** (top bar) — handy for a classroom display/kiosk
   setup so the browser chrome doesn't eat screen space.
 
-Progress (stars + unlocked levels) is saved separately per difficulty via
-`localStorage`.
+### Flow & progress
+
+The game always opens on the **difficulty picker** first, showcasing all
+three modes before dropping the student into a puzzle. Every level in
+every mode is playable from the start — nothing is locked — so a
+student (or teacher demoing the game) can jump straight to any level via
+the **Levels** button. Star ratings and best-move counts are still saved
+per difficulty via `localStorage`, purely as a record of best attempts,
+not as a gate.
 
 ## Project structure
 
@@ -70,6 +82,10 @@ js/main.js                  Three.js scene, multi-wall build/slide
                             animation, per-view x-ray panels, touch/mouse
                             input, mode & level select UI, scoring, save
                             data.
+js/icons.js                  Generates the curved-arrow SVG icons used on
+                            the rotate buttons (see "Controls" above),
+                            so direction is shown visually instead of via
+                            axis labels.
 js/verify-levels.mjs        A standalone Node script (no browser needed)
                             that brute-forces every level's 24 possible
                             orientations, in all three modes, and

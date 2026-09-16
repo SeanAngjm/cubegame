@@ -5,6 +5,7 @@ import {
   rotateX, rotateY, rotateZ, project,
   canonicalize2D, silhouettesMatch, boundingSize,
 } from './geometry.js';
+import { rotateIconSVG } from './icons.js';
 
 // ---------------------------------------------------------------------
 // Persistence
@@ -13,7 +14,7 @@ const SAVE_KEY = 'cubefit-progress-v2';
 const MODES = ['easy', 'medium', 'hard'];
 
 function defaultModeProgress() {
-  return { unlocked: 1, stars: {}, bestMoves: {} };
+  return { stars: {}, bestMoves: {} };
 }
 
 function loadProgress() {
@@ -43,7 +44,7 @@ let progress = loadProgress();
 // ---------------------------------------------------------------------
 const PANEL_SIZE = 5;
 const UNIT = 0.92;
-const SLIDE_DIST = 6.5; // how far a wall travels from/to, each side of center
+const SLIDE_DIST = 4.2; // how far a wall travels from/to, each side of center
 
 let mode = MODES.includes(progress.lastMode) ? progress.lastMode : 'easy';
 let LEVELS = LEVELS_BY_MODE[mode];
@@ -115,14 +116,14 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0c0e1e);
 
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-camera.position.set(3.6, 3.0, 6.6);
+camera.position.set(3.2, 2.6, 5.6);
 
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
 controls.target.set(0, 0, 0);
-controls.minDistance = 3.5;
-controls.maxDistance = 14;
+controls.minDistance = 3;
+controls.maxDistance = 10.5;
 // One-finger touch is reserved for swiping the PIECE (see the pointer
 // handlers below), so map it to PAN and then disable panning outright -
 // that keeps OrbitControls' own pointer bookkeeping/capture correct
@@ -404,9 +405,7 @@ function switchMode(newMode) {
   progress.lastMode = newMode;
   saveProgress();
   LEVELS = LEVELS_BY_MODE[mode];
-  const unlocked = progress.modes[mode].unlocked;
-  const startIndex = Math.min(unlocked - 1, LEVELS.length - 1);
-  loadLevel(Math.max(0, startIndex));
+  loadLevel(0);
 }
 
 // ---------------------------------------------------------------------
@@ -495,9 +494,6 @@ function onLevelSolved(level) {
   modeProgress.stars[key] = Math.max(modeProgress.stars[key] || 0, stars);
   const prevBest = modeProgress.bestMoves[key];
   modeProgress.bestMoves[key] = prevBest === undefined ? moveCount : Math.min(prevBest, moveCount);
-  if (level.number + 1 > modeProgress.unlocked) {
-    modeProgress.unlocked = Math.min(level.number + 1, LEVELS.length);
-  }
   saveProgress();
 
   resultTitle.textContent = pickWinTitle(stars);
@@ -577,7 +573,7 @@ function buildModeGrid() {
       <div class="modeName">${info.label}</div>
       <div class="modeSubtitle">${info.subtitle}</div>
       <div class="modeDesc">${info.desc}</div>
-      <div class="modeProgress">${mp.unlocked > 1 || totalStars > 0 ? `${totalStars}/${totalLevels * 3} ⭐ · Level ${Math.min(mp.unlocked, totalLevels)}/${totalLevels}` : 'Not started'}</div>
+      <div class="modeProgress">${totalStars > 0 ? `${totalStars}/${totalLevels * 3} ⭐ · ${totalLevels} levels` : `${totalLevels} levels · Not started`}</div>
     `;
     card.addEventListener('click', () => {
       switchMode(m);
@@ -596,13 +592,10 @@ function buildLevelGrid() {
     const btn = document.createElement('button');
     btn.className = 'levelTile';
     if (idx === levelIndex) btn.classList.add('current');
-    const locked = level.number > modeProgress.unlocked;
-    btn.disabled = locked;
     const stars = modeProgress.stars[String(level.number)] || 0;
-    btn.innerHTML = `<span>${locked ? '🔒' : level.number}</span>` +
-      (locked ? '' : `<span class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</span>`);
+    btn.innerHTML = `<span>${level.number}</span>` +
+      `<span class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</span>`;
     btn.addEventListener('click', () => {
-      if (locked) return;
       loadLevel(idx);
       closeModal('levelModal');
     });
@@ -678,6 +671,7 @@ el('fullscreenBtn').addEventListener('click', () => {
 // Wire up UI events
 // ---------------------------------------------------------------------
 document.querySelectorAll('.rotbtn').forEach((btn) => {
+  btn.innerHTML = rotateIconSVG(btn.dataset.axis, parseInt(btn.dataset.dir, 10));
   btn.addEventListener('click', () => doRotate(btn.dataset.axis, parseInt(btn.dataset.dir, 10)));
 });
 
@@ -716,13 +710,16 @@ function animate() {
 
 function boot() {
   resizeRenderer();
-  const unlocked = progress.modes[mode].unlocked;
-  const startIndex = Math.min(unlocked - 1, LEVELS.length - 1);
-  loadLevel(Math.max(0, startIndex));
+  loadLevel(0);
   animate();
 
+  // Menu-first: always greet the player with the difficulty picker so the
+  // modes are showcased up front, rather than dropping them straight into
+  // a level they may not have chosen.
+  openModal('modeModal');
+
   if (!localStorage.getItem(SAVE_KEY)) {
-    setTimeout(() => showToast('Welcome! Tap the ? button any time for how to play.'), 600);
+    setTimeout(() => showToast('Pick a difficulty above, or tap the ? button any time for how to play.'), 600);
   }
 }
 

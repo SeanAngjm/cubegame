@@ -71,10 +71,10 @@ button { touch-action: manipulation; }
 
 #gameArea {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
-  gap: 18px;
-  padding: 18px;
-  max-width: 1200px;
+  grid-template-columns: minmax(0, 2.2fr) minmax(240px, 0.75fr);
+  gap: 14px;
+  padding: 14px;
+  max-width: 1300px;
   margin: 0 auto;
 }
 
@@ -139,17 +139,17 @@ button { touch-action: manipulation; }
 #resultStars { font-size: 2rem; margin-bottom: 6px; }
 #resultMoves { color: var(--text-dim); margin-bottom: 18px; font-size: 0.9rem; }
 
-#sideCol { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+#sideCol { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 
 #controls {
   background: var(--panel);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 10px 12px;
 }
 
 #controls h2 {
-  margin: 0 0 10px 0;
-  font-size: 1rem;
+  margin: 0 0 6px 0;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-dim);
@@ -157,16 +157,16 @@ button { touch-action: manipulation; }
 
 #xrayPanels {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .xrayPanel {
   background: var(--panel);
   border-radius: var(--radius);
-  padding: 14px;
-  flex: 1 1 200px;
-  min-width: 170px;
+  padding: 8px 10px;
+  flex: 1 1 140px;
+  min-width: 130px;
 }
 
 .xrayPanel h2 {
@@ -216,16 +216,16 @@ button { touch-action: manipulation; }
 .swatch.open { background: var(--warn); opacity: 0.7; }
 .swatch.block { background: var(--bad); }
 
-.rotateGrid { display: flex; flex-direction: column; gap: 10px; }
+.rotateGrid { display: flex; flex-direction: column; gap: 6px; }
 .axisGroup {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: var(--panel-light);
-  padding: 8px 10px;
+  padding: 5px 8px;
   border-radius: 10px;
 }
-.axisLabel { font-weight: 700; width: 56px; font-size: 0.85rem; }
+.axisLabel { font-weight: 700; width: 40px; font-size: 0.78rem; }
 .axis-x { color: #ff8a8a; }
 .axis-y { color: #8affa0; }
 .axis-z { color: #8ab4ff; }
@@ -234,30 +234,34 @@ button { touch-action: manipulation; }
   background: #33396b;
   border: none;
   color: var(--text);
-  font-size: 1.35rem;
-  width: 54px;
-  height: 48px;
+  width: 44px;
+  height: 40px;
   border-radius: 8px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   transition: background 0.15s ease, transform 0.1s ease;
 }
 .rotbtn:hover { background: var(--accent-dark); transform: translateY(-1px); }
 .rotbtn:active { transform: translateY(0); }
+.rotIcon { width: 26px; height: 26px; display: block; }
 
 .movesRow {
-  margin-top: 12px;
-  font-size: 0.85rem;
+  margin-top: 8px;
+  font-size: 0.8rem;
   color: var(--text-dim);
 }
 #moveCount { color: var(--text); font-weight: 700; }
 
-.actionRow { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.actionRow { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 
 .bigbtn {
   border: none;
   border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 1rem;
+  padding: 9px 12px;
+  font-size: 0.92rem;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.1s ease, filter 0.15s ease;
